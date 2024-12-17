@@ -1,0 +1,33 @@
+version: "3.8"
+
+networks:
+    docker-test:
+        driver: bridge
+
+services:
+    db:
+        image: mysql:latest
+        container_name: container_base
+        networks:
+            - docker-test
+        ports:
+            - "3300:3306"
+        volumes:
+            - db_data:/mysql/var/db/lib
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: base_project
+    api:
+        image: mcr.microsoft.com/dotnet/aspnet:8.0
+        container_name: api_web
+        networks:
+            - docker-test
+        ports:
+            - "3000:8080"
+        build:
+            context: . 
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+volumes:
+    db_data:
